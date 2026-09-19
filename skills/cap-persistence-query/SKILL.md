@@ -1,14 +1,62 @@
-# CAP Persistence and Queries
+# CAP Persistence & Queries (Node.js)
 
-Use CAP persistence services and CQN for database-independent data access.
+## Scope
+Model persistence, use SQLite locally and SAP HANA in production, and access data safely with CQL/CQN and the CAP query APIs.
 
-## Guidance
+## Persistence model
+CDS entities become database tables or views. Use `cuid`, `managed`, reuse types, associations, compositions, and projections to express intent. Keep persistence models stable and service projections consumer-specific.
 
-- Use `cds-plugin-sqlite` for local development where appropriate.
-- Use `cds.connect.to('db')` for explicit database access.
-- Prefer `SELECT`, `INSERT`, `UPDATE`, and `DELETE` from `@sap/cds`.
-- Use parameterized CQN rather than string-built SQL.
-- Keep persistence logic inside transactions.
-- Design indexes and constraints for production workloads.
+## Local database
+```bash
+npm add -D @cap-js/sqlite
+cds deploy --to sqlite:db.sqlite
+```
 
-Check generated SQL and test against the target database dialect.
+Use in-memory persistence for fast tests and SQLite for realistic local development. Do not treat local SQLite behavior as a complete substitute for HANA semantics.
+
+## CQL and CQN
+```js
+const { SELECT, INSERT, UPDATE, DELETE } = cds.ql
+const books = await SELECT.from('sap.capire.bookshop.Books')
+  .columns('ID', 'title')
+  .where({ genre_ID: '...' })
+  .orderBy('title')
+  .limit(20)
+```
+
+Use parameterized query builders rather than concatenating user input. Prefer selecting only required columns and applying paging at the database.
+
+## Transactions
+Use `cds.tx(req)` or `req.tx` inside request handlers. Put related writes in one transaction and never manually commit or roll back a request-managed transaction.
+
+```js
+await cds.tx(req).run([
+  UPDATE(Books).set({ stock: { '-=': 1 } }).where({ ID }),
+  INSERT.into(OrderItems).entries(item)
+])
+```
+
+## Associations and compositions
+Use managed to-one associations where possible. Use compositions for document ownership and deep insert/update. Model to-many associations with valid `on` conditions. Understand generated foreign keys and redirected associations in services.
+
+## Query concerns
+- Validate filters and business authorization.
+- Use `req.query` only after applying policy checks.
+- Avoid N+1 queries; use joins, expands, or batched reads.
+- Add indexes based on measured query plans.
+- Handle `null`, decimals, dates, and UUIDs consistently.
+- Use optimistic locking where concurrent updates matter.
+
+## Database deployment
+Build database artifacts with `cds build --production`. Configure HANA through project profiles and deploy using the approved CI/CD or Cloud Foundry workflow. Keep schema changes backward compatible during rolling deployments.
+
+## Checklist
+- Queries are parameterized and bounded.
+- Transactions cover all related writes.
+- Authorization is enforced before reads and writes.
+- Pagination and ordering are deterministic.
+- Production database behavior is tested.
+
+## References
+- https://cap.cloud.sap/docs/guides/databases
+- https://cap.cloud.sap/docs/node.js/cds-ql

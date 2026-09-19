@@ -1,35 +1,44 @@
-# CAP Developer
+# CAP Developer Router (Node.js)
 
-Use this skill as the central router for Node.js SAP Cloud Application Programming Model development.
+Use this router to select the focused CAP skill before making changes.
 
-## Route by task
+## Workflow
+1. Understand the business use case and bounded context.
+2. Model domain data in CDS.
+3. Define a narrow service projection and API.
+4. Add declarative authorization and validation.
+5. Use generic providers first.
+6. Add transactional handlers only for domain-specific behavior.
+7. Add tests, events/integrations, UI annotations, and deployment configuration as needed.
+8. Run assessment and quality gates.
 
-- Project setup or local execution → `cap-get-started`
-- CDS entities and relationships → `cap-model-domain`
-- Database access and CQN → `cap-persistence-query`
-- OData services and projections → `cap-service-api`
-- Custom behavior and transactions → `cap-handlers-transactions`
-- Validation and invariants → `cap-validation`
-- Automated tests → `cap-testing`
-- Identity and authorization → `cap-security`
-- Fiori elements and UI → `cap-fiori-ui`
-- Events and brokers → `cap-events-messaging`
-- External APIs → `cap-remote-services`
-- HANA, Cloud Foundry, Kyma, or deployment → `cap-database-deployment`
-- Version upgrades → `cap-upgrade`
-- Readiness review → `cap-assessment`
+## Skill map
+- Project setup and Bookshop: `cap-get-started`
+- Domain modeling: `cap-model-domain`
+- Persistence and CQN: `cap-persistence-query`
+- Services and OData APIs: `cap-service-api`
+- Handlers and transactions: `cap-handlers-transactions`
+- Validation and status flows: `cap-validation`
+- Testing: `cap-testing`
+- Authentication and authorization: `cap-security`
+- Fiori/UI annotations: `cap-fiori-ui`
+- Events and messaging: `cap-events-messaging`
+- Remote service consumption: `cap-remote-services`
+- Database and deployment: `cap-database-deployment`
+- Upgrades and migrations: `cap-upgrade`
+- Completeness review: `cap-assessment`
 
-## Default engineering workflow
+## End-to-end checklist
+- [ ] CDS model captures intent and uses stable keys.
+- [ ] Service is a use-case-oriented facade.
+- [ ] Authorization is enforced server-side.
+- [ ] Constraints and status transitions are validated.
+- [ ] Database operations are parameterized and transactional.
+- [ ] External calls and events are resilient and idempotent.
+- [ ] Tests cover business, security, and failure paths.
+- [ ] Deployment, observability, migration, and rollback are ready.
 
-1. Clarify the business capability and consumers.
-2. Model the domain in CDS.
-3. Expose least-privilege service projections.
-4. Rely on generic providers before adding custom handlers.
-5. Add handlers only for behavior the framework cannot provide.
-6. Keep database work inside request transactions.
-7. Add authorization and validation before integration.
-8. Test locally, in CI, and against production-like services.
-9. Build and deploy with environment-managed credentials.
-10. Assess the result against the quality checklist.
-
-Prefer official CAP conventions, small changes, explicit contracts, secure defaults, and tests that reproduce production behavior.
+## References
+- https://cap.cloud.sap/docs/get-started/
+- https://cap.cloud.sap/docs/guides/providing-services
+- https://cap.cloud.sap/docs/node.js/
